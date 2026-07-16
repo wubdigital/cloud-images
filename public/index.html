@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cloud-image</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <p>Upload a worker document directly to AWS S3</p>
+      </header>
+      <main>
+        <form id="uploadForm">
+          <div>
+            <label for="description">תיאור המסמך:</label>
+            <input type="text" id="description" name="description" required />
+          </div>
+
+          <div>
+            <label for="file">בחר תמונה:</label>
+            <input
+              type="file"
+              id="file"
+              name="file"
+              accept="image/*"
+              required
+            />
+          </div>
+
+          <button type="submit">העלה לשרת</button>
+        </form>
+        <p id="statusMessage"></p>
+      </main>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
