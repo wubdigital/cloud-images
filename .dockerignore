@@ -1,0 +1,6 @@
+node_module
+.gitignore
+.env
+.dockerignore
+.git
+requests.http

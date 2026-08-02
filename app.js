@@ -10,15 +10,8 @@ const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { randomUUID } = require("crypto");
 const app = express();
 const PORT = 3000;
-console.log("Testing ENV variables:");
-console.log("Access Key:", process.env.AWS_ACCESS_KEY_ID);
-console.log("Bucket:", process.env.S3_BUCKET);
 const s3 = new S3Client({
   region: process.env.AWS_REGION,
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  },
 });
 const BUCKET = process.env.S3_BUCKET;
 const upload = multer({ storage: multer.memoryStorage() });

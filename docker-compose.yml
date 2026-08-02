@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+      target: runner
+    env_file:
+      - .env
+    ports:
+      - "8080:3000"
+    volumes:
+      - ./app.js:/app/app.js
+      - ./public:/app/public
+      - /app/node_modules
+    command: ["npx", "nodemon", "app.js"]
+    restart: unless-stopped

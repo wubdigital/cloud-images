@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  web:
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app # מסנכרן את הקוד שלך מהמחשב לתוך הקונטיינר בזמן אמת
+      - /app/node_modules # מגן על ה-node_modules של הקונטיינר שלא יידרסו
