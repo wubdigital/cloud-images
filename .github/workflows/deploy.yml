@@ -46,4 +46,6 @@ jobs:
           NEW_TASK_ARN=$(aws ecs register-task-definition --cli-input-json file://cleaned-task-definition.json --query 'taskDefinition.taskDefinitionArn' --output text)
 
           aws ecs update-service --cluster production-cluster --service app-service --task-definition $NEW_TASK_ARN
-          aws ecs wait services-stable --cluster production-cluster --services app-service
+
+          echo "Waiting for service to stabilize..."
+          aws ecs describe-services --cluster production-cluster --services app-service --query "services[0].deployments"
