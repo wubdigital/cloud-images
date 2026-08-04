@@ -37,23 +37,13 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Download task definition
+      - name: Deploy to Amazon ECS
         run: |
           aws ecs describe-task-definition --task-definition production-pipeline-task --query taskDefinition > task-definition.json
-          jq 'del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task-definition.json > temp.json && mv temp.json task-definition.json
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: render-task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: app-container
-          image: ${{ steps.build-image.outputs.image }}
+          jq --arg IMAGE "${{ steps.build-image.outputs.image }}" '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' task-definition.json > cleaned-task-definition.json
 
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.render-task-def.outputs.task-definition }}
-          service: app-service
-          cluster: production-cluster
-          wait-for-service-stability: true
+          NEW_TASK_ARN=$(aws ecs register-task-definition --cli-input-json file://cleaned-task-definition.json --query 'taskDefinition.taskDefinitionArn' --output text)
+
+          aws ecs update-service --cluster production-cluster --service app-service --task-definition $NEW_TASK_ARN
+          aws ecs wait services-stable --cluster production-cluster --services app-service
